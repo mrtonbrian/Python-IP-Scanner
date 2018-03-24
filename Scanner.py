@@ -92,7 +92,6 @@ class Scanner:
         row_data = self.tree.item(data)
         ip, mac = row_data['values'][0], row_data['values'][2]
         print ip, mac
-        # print self.tree.selection()
         PropertiesMENU(new_tl, ip, mac)
         f = open('data.dat', 'r')
         lines = f.read().splitlines()
@@ -239,7 +238,6 @@ class Scanner:
                 f = open('hostnames.dat', 'r')
                 l = f.read().splitlines()
                 del l[0]
-                # print l
                 f.close()
                 self.hn_assoc = {}
                 for m in l:
@@ -341,14 +339,12 @@ class Scanner:
             print 'value'
             showerror("Invalid Range", "Your IP Range Is Invalid")
             return None
-        # print 'started'
         try:
             self.tcp_connect(start_ip[0], start_ip[1], start_ip[2], start_ip[3], end_ip[3])
             print 'pinging'
             self.ping_ports(start_ip[0], start_ip[1], start_ip[2], start_ip[3], end_ip[3])
             self.IPs = list(set(self.IPs))
             print len(self.IPs)
-            # print 'done'
             l = map(socket.inet_aton, self.IPs)
             l.sort()
             self.IPs = map(socket.inet_ntoa, l)
@@ -364,8 +360,6 @@ class Scanner:
             try:
                 s.connect((ip, port))
                 s.close()
-                # print ip
-                # print ip
                 self.IPs.append(str(ip))
                 self.finished_port = True
             except:
@@ -384,7 +378,6 @@ class Scanner:
                         56789, 62078, 63392, 63426, 64738]
         for i in range(int(d_min), int(d_max)):
             if i % 32 == 0:
-                # print i
                 pass
             for p in common_ports:
                 threading.Thread(target=lambda: connect_to_sock(working_string + str(i), p, TIMEOUT)).start()
