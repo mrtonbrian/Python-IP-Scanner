@@ -1,2 +1,5 @@
 *.dat
 .idea/
+.vscode/
+*.json
+

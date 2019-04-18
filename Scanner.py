@@ -9,6 +9,7 @@ import sys
 import urllib2
 import ttk
 import os
+import os.path
 import subprocess
 from tkSimpleDialog import *
 import warnings
@@ -202,11 +203,12 @@ class Scanner:
                 t.append(i)
         s = ''.join(t)
         s = s.upper()
+        if not t:
+            return ""
         # Uses The MacVendors.co API (http://macvendors.co/api)
         response = urllib2.Request('https://macvendors.co/api/vendorname/' + s, headers={'User-Agent': "API Browser"})
         response = urllib2.urlopen(response)
         return response.read()
-
     def wrapper(self, stup, e, e2):
         if not stup:
             showinfo("Starting Scan", "Starting Scan:\nGUI May FREEZE \nThat Just Means The Program Is Working")
@@ -369,16 +371,8 @@ class Scanner:
 
         working_string = a + "." + b + "." + c + "."
         # No Port 53 b/c Often Connects W/O Actual Device
-        common_ports = [13, 17, 19, 20, 21, 22, 23, 25, 37, 67, 68, 69, 80, 81, 110, 111, 113, 123, 135, 137, 138, 139,
-                        143, 161, 162, 179, 389, 407, 443, 445, 500, 518, 520, 548, 587, 631, 635, 636, 989, 990, 993,
-                        995, 1024, 1025, 1026, 1027, 1028, 1029, 1050, 1723, 1863, 2049, 2302, 3389, 3784, 4444, 4567,
-                        5000, 5050, 5060, 5093, 5353, 5678, 7547, 7676, 8000, 8080, 8081, 8082, 8594, 8767, 8888, 9915,
-                        9916, 9987, 10000, 12203, 12345, 18067, 27374, 27960, 27971, 28786, 28960, 28961, 28962, 28964,
-                        29070, 29072, 29900, 29901, 29961, 30005, 30722, 34321, 34818, 49152, 49175, 50050, 50444,
-                        56789, 62078, 63392, 63426, 64738]
+        common_ports = [25, 80, 443, 20, 21, 23, 143, 3389, 22, 53]
         for i in range(int(d_min), int(d_max)):
-            if i % 32 == 0:
-                pass
             for p in common_ports:
                 threading.Thread(target=lambda: connect_to_sock(working_string + str(i), p, TIMEOUT)).start()
                 if self.finished_port:
@@ -408,8 +402,9 @@ class Scanner:
             output = subprocess.Popen(['ping', '-c', '1', '-w', '1000', ip], stdout=subprocess.PIPE,
                                       startupinfo=info).communicate()[0]
         out = output.decode('utf-8')
-        if "Destination host unreachable" in out or "Request timed out" in out:
-            pass
+        #print(ip, ":", out)
+        if "destination host unreachable" in out.lower() or "request timed out" in out.lower():
+            return
         else:
             self.IPs.append(ip)
 
@@ -481,5 +476,8 @@ class ping_menu:
 
 if __name__ == '__main__':
     root = Tk()
+    root.iconbitmap( + "IP.ico")
+    root.title("IP Address Scanner")
+    root.resizable(False, False)
     Scanner(root)
     os._exit(0)
